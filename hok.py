@@ -21,7 +21,7 @@ def main():
     valid_urls = []
     base_url = 'https://tl.honorofkings.com/v2/tl/29134_1_'
 
-    for _ in range(100):  # Ubah jumlah iterasi sesuai kebutuhan
+    for _ in range(10000):  # Ubah jumlah iterasi sesuai kebutuhan
         random_string = generate_random_string()
         full_url = base_url + random_string
         if check_url_validity(full_url):
