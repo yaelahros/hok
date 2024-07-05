@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 const {
   Connection,
   PublicKey,
@@ -10,7 +10,7 @@ const {
 } = require('@solana/web3.js');
 require('dotenv').config();
 
-const DEVNET_URL = 'https://api.devnet.solana.com';
+const DEVNET_URL = 'https://devnet.sonic.game/';
 const connection = new Connection(DEVNET_URL, 'confirmed');
 
 async function sendSol(fromKeypair, toPublicKey, amount) {
@@ -41,25 +41,33 @@ async function main() {
   }
   const fromKeypair = await getKeypairFromSeed(seedPhrase);
 
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext();
+  const page = await context.newPage();
   
   // Navigasi ke website
-  await page.goto('URL_WEBSITE_ANDA');
+  await page.goto('https://odyssey.sonic.game/task/ring-lottery');
 
   // Login atau hubungkan wallet jika diperlukan
   // ...
 
   // Fungsionalitas untuk klik tombol ring lottery
-  const maxTransactions = 5;
+  const maxTransactions = 1;
   const amountToSend = 0.001;
   for (let i = 0; i < maxTransactions; i++) {
     try {
       // Klik tombol untuk memulai transaksi
       await page.click('SELECTOR_TOMBOL_RING_LOTTERY');
       
-      // Dapatkan public key tujuan dari response website jika ada
-      const toPublicKey = new PublicKey('PUBLIC_KEY_TUJUAN'); // Sesuaikan sesuai response website
+      // Tunggu beberapa saat hingga elemen dengan public key tujuan tersedia
+      await page.waitForSelector('SELECTOR_ELEMEN_YANG_MENGANDUNG_PUBLIC_KEY');
+
+      // Dapatkan public key tujuan dari halaman
+      const toPublicKeyString = await page.evaluate(() => {
+        // Ganti dengan selector yang benar
+        return document.querySelector('SELECTOR_ELEMEN_YANG_MENGANDUNG_PUBLIC_KEY').innerText;
+      });
+      const toPublicKey = new PublicKey(toPublicKeyString);
 
       // Lakukan transaksi
       await sendSol(fromKeypair, toPublicKey, amountToSend);
