@@ -11,7 +11,7 @@ def get_wallet_balance(wallet_address):
     Returns:
         dict: A dictionary containing the wallet address and its balance or error.
     """
-    url = f"https://vanascan.io/api/wallet/{wallet_address}"  # Hypothetical API endpoint
+    url = f"https://vanascan.io/address/{wallet_address}"  # Hypothetical API endpoint
 
     try:
         response = requests.get(url)
